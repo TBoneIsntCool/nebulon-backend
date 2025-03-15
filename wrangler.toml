@@ -1,0 +1,5 @@
+name = "nebulon-backend"
+type = "javascript"
+main = "index.js"
+account_id = "9ae71f9196110fc54fd2dc23c8126b0c"
+workers_dev = true
