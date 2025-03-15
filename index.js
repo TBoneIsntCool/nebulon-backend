@@ -1,21 +1,22 @@
-export default {
-    async fetch(request) {
-        try {
-            const apiUrl = "https://astroservercheck.joejoetv.de/api/check?url=147.185.221.16:23237";
-            const response = await fetch(apiUrl);
-            const data = await response.json();
+addEventListener('fetch', event => {
+  event.respondWith(handleRequest(event.request));
+});
 
-            // Extract player count
-            const playerCount = data.server?.onlinePlayers ?? "Error";
+async function handleRequest(request) {
+  const url = new URL(request.url);
+  const apiUrl = 'https://astroservercheck.joejoetv.de/api/check';
+  
+  const data = { url: "147.185.221.16:23237" };
 
-            return new Response(JSON.stringify({ playerCount }), {
-                headers: { "Content-Type": "application/json" }
-            });
+  const response = await fetch(apiUrl, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
 
-        } catch (error) {
-            return new Response(JSON.stringify({ playerCount: "Error" }), {
-                headers: { "Content-Type": "application/json" }
-            });
-        }
-    }
-};
+  const json = await response.json();
+
+  return new Response(JSON.stringify(json), {
+    headers: { 'Content-Type': 'application/json' }
+  });
+}
