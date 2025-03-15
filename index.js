@@ -3,35 +3,24 @@ addEventListener('fetch', event => {
 })
 
 async function handleRequest(request) {
-  // Fetch the server status data
-  const serverData = await fetchServerData()
-
-  // Optionally, you can store the data in a GitHub repository using GitHub API
-  // We'll skip the GitHub API interaction for now
-
-  // Return the server data as JSON to the client
-  return new Response(JSON.stringify(serverData), {
-    headers: { 'Content-Type': 'application/json' }
-  })
+  try {
+    const serverData = await fetchServerData()
+    
+    return new Response(JSON.stringify(serverData), {
+      headers: { 
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*', // Allow any origin
+        'Access-Control-Allow-Methods': 'GET, POST, OPTIONS', // Allow these methods
+        'Access-Control-Allow-Headers': 'Content-Type', // Allow the Content-Type header
+      }
+    })
+  } catch (error) {
+    return new Response('Error occurred: ' + error.message, { status: 500 })
+  }
 }
 
 async function fetchServerData() {
-  const url = 'https://astroservercheck.joejoetv.de/api/check?url=147.185.221.16:23237'  // Example URL, replace with your actual server URL
-  const response = await fetch(url)
-  
-  if (!response.ok) {
-    throw new Error('Error fetching server data')
-  }
-
+  const response = await fetch('https://astroservercheck.joejoetv.de/api/check?url=147.185.221.16:23237')
   const data = await response.json()
-
-  // Here you can choose to update your GitHub repository with the fetched data (if you want to store it)
-  // Example using GitHub API (not included in this code snippet, requires authentication)
-
-  return {
-    onlinePlayers: data.server.onlinePlayers,
-    maxPlayers: data.server.maxPlayers,
-    serverName: data.server.serverName,
-    status: data.server.network ? 'Online' : 'Offline'
-  }
+  return data.server // You can adjust this based on the data you want to return
 }
